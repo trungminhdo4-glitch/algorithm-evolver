@@ -1,0 +1,26 @@
+============================================================
+GP EXPERIMENT ANALYSIS REPORT
+============================================================
+
+Experiment: sorting_network
+Timestamp: 2026-02-07 20:40:24
+----------------------------------------
+
+📊 PERFORMANCE SUMMARY
+----------------------------------------
+Success Rate: 75.0%
+Best Fitness: 0.0
+Validation Tests: 4
+
+🧬 BEST ALGORITHM
+----------------------------------------
+Expression: make_tuple3(get_first(compare_swap(b, get_first(compare_swap(c, a)))), get_second(compare_swap(b, get_first(compare_swap(c, a)))), get_second(compare_swap(c, a)))
+Tree Size: 162 nodes
+Tree Depth: N/A
+
+✅ VALIDATION RESULTS
+----------------------------------------
+Test 1: (7, 3, 5) → (3, 5, 7) (expected (3, 5, 7)) [PASS]
+Test 2: (1, 1, 2) → (1, 1, 2) (expected (1, 1, 2)) [PASS]
+Test 3: (9, 4, 6) → (4, 6, 9) (expected (4, 6, 9)) [PASS]
+Test 4: (-10, 0, -5) → (-10, 0, -5) (expected (-10, -5, 0)) [FAIL]

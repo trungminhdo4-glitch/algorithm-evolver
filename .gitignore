@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+results/*.png
+results/*.txt
+results/*.json
+.gemini/
+venv/
+.idea/
+.vscode/

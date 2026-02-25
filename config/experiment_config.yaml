@@ -1,0 +1,24 @@
+# Datei: config/experiment_config.yaml
+# Konfigurations-basierte Experimente
+experiments:
+  symbolic_regression:
+    engine: "ParallelEvolutionaryEngine"
+    params:
+      population_size: 200
+      generations: 100
+      n_jobs: 4
+      multi_objective: true
+    features:
+      - parallel_evaluation
+      - bloat_control
+      - diversity_preservation
+  
+  sorting_network:
+    engine: "EnsembleEvolver"
+    params:
+      n_models: 7
+      population_size: 150
+      generations: 80
+    features:
+      - ensemble_learning
+      - transfer_learning
