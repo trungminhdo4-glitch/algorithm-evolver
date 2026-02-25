@@ -27,6 +27,7 @@ def main():
     print(" [2] Ballistic Motion      - Classical mechanics / Projectile distance")
     print(" [3] Ideal Gas Law         - Thermodynamics (P*V = n*R*T)")
     print(" [4] Damped Oscillation    - Complex dynamics & Dimensional Analysis")
+    print(" [5] Newton's Law          - Gravitational discovery (F \u221d m1*m2/r\u00b2)")
     print(" [0] Exit")
     
     choice = input("\n> ")
@@ -62,6 +63,11 @@ def main():
             from experiments.run_oscillation import run_oscillation_discovery
             run_oscillation_discovery(population_size=1000, generations=150)
             print(f"\n\u2705 Discovery log saved to: results/oscillation_discovery.txt")
+            
+        elif choice == '5':
+            from experiments.run_gravitation import run_gravitation_discovery
+            run_gravitation_discovery(population_size=500, generations=50)
+            print(f"\n\u2705 Discovery log saved to: results/gravitation_pareto.txt")
             
         else:
             print("Invalid choice.")

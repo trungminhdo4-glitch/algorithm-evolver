@@ -76,6 +76,10 @@ def create_power_law_primitive_set(input_types, output_type, name="POWER"):
     
     pset.addPrimitive(protected_div, [output_type, output_type], output_type)
     
+    pset.addEphemeralConstant("rand_dimensional", 
+                              partial(random.uniform, -10, 10), 
+                              output_type)
+    
     return pset
 
 def add_comparison_primitives(pset):
