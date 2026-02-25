@@ -8,4 +8,6 @@ scipy
 pytest
 symengine
 scikit-learn
+emcee
+scikit-image
 pandas

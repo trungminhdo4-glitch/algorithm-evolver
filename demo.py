@@ -30,6 +30,7 @@ def main():
     print(" [5] Newton's Law          - Gravitational discovery (F \u221d m1*m2/r\u00b2)")
     print(" [6] NASA Airfoil Discovery - Real Data: Noise law discovery (P \u221d U\u2075)")
     print(" [7] Download & Analyze Kaggle Dataset - Professional Workflow")
+    print(" [8] Discovery of Dynamical Systems (ODE) - V2.0 Upgrade")
     print(" [0] Exit")
     
     choice = input("\n> ")
@@ -38,7 +39,7 @@ def main():
         print("Goodbye!")
         return
 
-    # Option 7 might not need MP immediately or handles it differently, but let's keep the prompt for consistency
+    # Option 7 & 8 handle MP status individually for now to avoid complexity in integration
     use_mp = input("\nEnable Multiprocessing? (y/n) [Default: n]: ").lower() == 'y'
     
     if use_mp:
@@ -100,6 +101,12 @@ def main():
             print("\n🚀 Starting Discovery on Kaggle Dataset...")
             run_csv_experiment(local_csv, target_col)
             print(f"\n\u2705 Discovery completed for {dataset_id}")
+
+        elif choice == '8':
+            from experiments.run_predator_prey import run_predator_prey_experiment
+            print("🐆 Starting Lotka-Volterra (Predator-Prey) Discovery...")
+            run_predator_prey_experiment(population_size=1000, generations=100)
+            print(f"\n\u2705 Dynamical Discovery complete. Results in 'results/'.")
             
         else:
             print("Invalid choice.")

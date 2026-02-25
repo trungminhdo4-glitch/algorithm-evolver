@@ -134,7 +134,7 @@ class CsvProblem:
         
         return pset
 
-    def evaluate(self, individual, toolbox):
+    def evaluate(self, individual, func):
         """Standard evaluation logic."""
         from core.physics import DimensionalChecker
         from core.simplification import ProgramSimplifier
@@ -166,7 +166,7 @@ class CsvProblem:
             dim_penalty = 1000.0 # Softer penalty for wrong dimension
             
         # 2. Accuracy
-        func = toolbox.compile(expr=individual)
+        # func is pre-compiled
         mse = 0
         for inputs, target in self.train_data:
             try:
