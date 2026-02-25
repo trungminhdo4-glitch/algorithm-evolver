@@ -1,7 +1,11 @@
+kaggle
 numpy
-scipy
-matplotlib
+pandas
 deap
 sympy
+matplotlib
+scipy
+pytest
+symengine
 scikit-learn
 pandas

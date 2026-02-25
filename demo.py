@@ -29,6 +29,7 @@ def main():
     print(" [4] Damped Oscillation    - Complex dynamics & Dimensional Analysis")
     print(" [5] Newton's Law          - Gravitational discovery (F \u221d m1*m2/r\u00b2)")
     print(" [6] NASA Airfoil Discovery - Real Data: Noise law discovery (P \u221d U\u2075)")
+    print(" [7] Download & Analyze Kaggle Dataset - Professional Workflow")
     print(" [0] Exit")
     
     choice = input("\n> ")
@@ -37,6 +38,7 @@ def main():
         print("Goodbye!")
         return
 
+    # Option 7 might not need MP immediately or handles it differently, but let's keep the prompt for consistency
     use_mp = input("\nEnable Multiprocessing? (y/n) [Default: n]: ").lower() == 'y'
     
     if use_mp:
@@ -78,6 +80,26 @@ def main():
             print("🚀 Starting NASA Airfoil Discovery...")
             run_nasa_airfoil()
             print(f"\n\u2705 Discovery results saved to: results/nasa_airfoil_results.txt")
+
+        elif choice == '7':
+            from utils.kaggle_loader import download_kaggle_dataset, inject_units_interactively
+            from experiments.run_csv_discovery import run_csv_experiment
+            
+            dataset_id = input("\nEnter Kaggle Dataset ID (e.g., 'fedesoriano/airfoil-self-noise-dataset'): ").strip()
+            target_col = input("Which target column do you want to predict? (Exact name): ").strip()
+            
+            # 1. Download
+            local_csv = download_kaggle_dataset(dataset_id)
+            if not local_csv:
+                return
+
+            # 2. Interactive Units
+            local_csv = inject_units_interactively(local_csv)
+            
+            # 3. Analyze
+            print("\n🚀 Starting Discovery on Kaggle Dataset...")
+            run_csv_experiment(local_csv, target_col)
+            print(f"\n\u2705 Discovery completed for {dataset_id}")
             
         else:
             print("Invalid choice.")
