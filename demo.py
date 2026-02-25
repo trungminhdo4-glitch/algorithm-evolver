@@ -28,6 +28,7 @@ def main():
     print(" [3] Ideal Gas Law         - Thermodynamics (P*V = n*R*T)")
     print(" [4] Damped Oscillation    - Complex dynamics & Dimensional Analysis")
     print(" [5] Newton's Law          - Gravitational discovery (F \u221d m1*m2/r\u00b2)")
+    print(" [6] NASA Airfoil Discovery - Real Data: Noise law discovery (P \u221d U\u2075)")
     print(" [0] Exit")
     
     choice = input("\n> ")
@@ -68,6 +69,15 @@ def main():
             from experiments.run_gravitation import run_gravitation_discovery
             run_gravitation_discovery(population_size=500, generations=50)
             print(f"\n\u2705 Discovery log saved to: results/gravitation_pareto.txt")
+            
+        elif choice == '6':
+            from utils.data_fetcher import fetch_nasa_airfoil
+            from experiments.run_nasa_airfoil import run_nasa_airfoil
+            print("🔍 Ensuring NASA data is available...")
+            fetch_nasa_airfoil()
+            print("🚀 Starting NASA Airfoil Discovery...")
+            run_nasa_airfoil()
+            print(f"\n\u2705 Discovery results saved to: results/nasa_airfoil_results.txt")
             
         else:
             print("Invalid choice.")

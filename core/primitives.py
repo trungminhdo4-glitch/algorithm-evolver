@@ -27,6 +27,17 @@ def protected_exp(x):
     except OverflowError:
         return 1e10
 
+def protected_pow(a, b):
+    """Calculates a^b with safety checks."""
+    try:
+        # Avoid complex numbers and overflow
+        if a <= 0:
+            return 0.0
+        res = math.pow(a, max(-10, min(10, b)))
+        return res
+    except (OverflowError, ValueError, ZeroDivisionError):
+        return 1e10
+
 def if_then_else(condition, out1, out2):
     return out1 if condition else out2
 

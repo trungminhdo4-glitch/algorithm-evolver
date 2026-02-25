@@ -6,6 +6,14 @@ import random
 import numpy as np
 from deap import base, creator, tools, algorithms, gp
 
+def _get_fitness(ind):
+    return ind.fitness.values
+
+def _evaluate_wrapper(evaluate_func, pset, individual):
+    # Compile locally for multiprocessing safety
+    func = gp.compile(individual, pset)
+    return evaluate_func(individual, func)
+
 class EvolutionaryEngine:
     def __init__(self, pset, evaluate_func, population_size=100, 
                  cxpb=0.6, mutpb=0.3, tournsize=5, max_height=10):
@@ -43,10 +51,7 @@ class EvolutionaryEngine:
         self.toolbox.register("population", tools.initRepeat, 
                              list, self.toolbox.individual)
         
-        def wrapped_evaluate(individual):
-            return self.evaluate_func(individual, self.toolbox)
-        
-        self.toolbox.register("evaluate", wrapped_evaluate)
+        self.toolbox.register("evaluate", _evaluate_wrapper, self.evaluate_func, self.pset)
         self.toolbox.register("compile", gp.compile, pset=self.pset)
         
         self.toolbox.register("select", tools.selTournament, 
@@ -62,7 +67,7 @@ class EvolutionaryEngine:
             key=operator.attrgetter("height"), max_value=self.max_height))
     
     def _setup_statistics(self):
-        self.stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
+        self.stats_fit = tools.Statistics(_get_fitness)
         self.stats_size = tools.Statistics(len)
         self.stats = tools.MultiStatistics(fitness=self.stats_fit, 
                                           size=self.stats_size)
