@@ -19,7 +19,7 @@ The **Scientific Discovery Engine** is a powerful symbolic regression framework 
 
 ### Installation
 ```bash
-git clone https://github.com/yourusername/scientific-discovery-engine.git
+git clone https://github.com/trubgminhdo4-glitch/scientific-discovery-engine.git
 cd scientific-discovery-engine
 pip install -r requirements.txt
 ```
