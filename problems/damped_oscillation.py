@@ -27,6 +27,7 @@ class DampedOscillationProblem:
         
         # Trainingsdaten generieren
         random.seed(42)
+        np.random.seed(42)
         self.t_values = np.linspace(0, 4 * math.pi, 100)
         self.x_values = self.A * np.exp(-self.delta * self.t_values) * np.cos(self.omega * self.t_values)
         
