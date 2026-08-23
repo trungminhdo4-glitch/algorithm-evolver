@@ -11,16 +11,16 @@ try:
     import networkx as nx
     HAS_NETWORKX = True
 except ImportError:
+    # Optional capability, detected silently: availability is reported at
+    # call time by ResultAnalyzer.plot_tree, never via import-time console
+    # output (which breaks imports under non-UTF-8 stdio encodings).
     HAS_NETWORKX = False
-    print("⚠️  NetworkX not installed. Tree visualization disabled.")
-    print("   Install with: pip install networkx")
 
 try:
     from deap import gp
     HAS_DEAP_GP = True
 except ImportError:
-    HAS_DEAP_GP = False
-    print("⚠️  DEAP GP module not available. Tree visualization disabled.")
+    HAS_DEAP_GP = False  # see HAS_NETWORKX note above
 
 class ResultAnalyzer:
     """
