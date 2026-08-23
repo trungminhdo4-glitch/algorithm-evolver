@@ -61,6 +61,7 @@ def run_oscillation_discovery(population_size=2000, generations=200, verbose=Tru
     
     for gen in range(1, generations + 1):
         problem.current_generation = gen
+        problem.invalidate_stale_fitness(population, gen)
         
         if gen == 1:
             print(f"--- Phase 1: Focus on Initial Rise (t <= 1.0) ---")

@@ -14,6 +14,8 @@ class DampedOscillationProblem:
     Target: x(t) = 1.0 * exp(-0.5 * t) * cos(2 * pi * t)
     """
     
+    CURRICULUM_SPLIT_GENERATION = 20
+
     def __init__(self):
         self.name = "damped_oscillation"
         self.input_names = ['t']
@@ -46,7 +48,34 @@ class DampedOscillationProblem:
             'rand_float': Dimension(0, 0, 0)     # Dimensionless
         }
         self.target_unit = Dimension(0, 1, 0)  # Displacement [L]
-    
+
+    def evaluation_window(self, generation=None):
+        """Return which data window 'generation' is evaluated on.
+
+        Single authority for the curriculum split: generations
+        <= CURRICULUM_SPLIT_GENERATION see only t <= 1.0, later
+        generations see the full training domain.
+        """
+        gen = self.current_generation if generation is None else generation
+        if gen <= self.CURRICULUM_SPLIT_GENERATION:
+            return "initial_rise"
+        return "full_domain"
+
+    def invalidate_stale_fitness(self, population, generation):
+        """Drop cached fitness values that predate a curriculum window change.
+
+        DEAP caches fitness values and eaMuPlusLambda re-evaluates only
+        individuals with invalid fitness. Survivors carried across a window
+        boundary would otherwise keep scores computed on the old window,
+        making selection compare incomparable fitness vectors.
+        """
+        window = self.evaluation_window(generation)
+        previous = getattr(self, "_synced_window", None)
+        if previous is not None and window != previous:
+            for individual in population:
+                del individual.fitness.values
+        self._synced_window = window
+
     def create_primitive_set(self):
         """Create problem-specific primitive set"""
         from core.primitives import create_typed_primitive_set, add_transcendental_primitives
@@ -83,7 +112,7 @@ class DampedOscillationProblem:
         # 2. Curriculum Learning
         # Early generations: only evaluate on first part of the signal [0, 1.0]
         # Late generations: evaluate on whole range
-        if self.current_generation <= 20:
+        if self.evaluation_window() == "initial_rise":
              # Filter data for t <= 1.0
              eval_data = [(inp, target) for inp, target in self.train_data if inp[0] <= 1.0]
         else:

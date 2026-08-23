@@ -54,6 +54,7 @@ def run_oscillation_discovery():
         
         for gen in range(0, generations, 10):
             problem.current_generation = gen
+            problem.invalidate_stale_fitness(population, gen)
             population, log = engine.run_nsga2(generations=10, seed=42, population=population)
             best_fit = tools.selBest(population, 1)[0].fitness.values[0]
             print(f"Gen {gen:3d} | Best Fitness: {best_fit:.4e}")
