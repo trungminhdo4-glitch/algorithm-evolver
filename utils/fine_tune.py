@@ -19,33 +19,23 @@ def refine_with_scipy(expr_str, X_data, y_data, input_names=['v', 'angle']):
         params = []
         param_values = []
         
-        # Mapping from number to parameter symbol
-        substitutions = {}
-        
-        # Recursive function to find numbers and swap them
-        current_param_idx = 0
-        
-        # Fix: We don't want to replace "2" in sin(2*angle) if it's a fixed structural part,
-        # but the prompt specifically says "replace all numbers".
-        # Let's find floats and ints.
-        
-        for atom in expr.atoms(sp.Number):
-            # Skip Integers to preserve structure (like exponents in PV/n^2 if any)
-            # Only optimize Floats (numerical constants)
-            if atom.is_Float:
-                p_sym = sp.Symbol(f'p{current_param_idx}')
+        def _parameterize(node):
+            # Skip Integers to preserve structure (like exponents in PV/n^2 if any).
+            # Only optimize Floats (numerical constants) - per OCCURRENCE, so
+            # equal values at different positions stay independently fittable.
+            if node.is_Float:
+                p_sym = sp.Symbol(f'p{len(params)}')
                 params.append(p_sym)
-                param_values.append(float(atom))
-                substitutions[atom] = p_sym
-                current_param_idx += 1
+                param_values.append(float(node))
+                return p_sym
+            return node
+
+        param_expr = expr.replace(
+            lambda node: node.is_Float, _parameterize
+        )
         
         if not params:
             return str(expr), {} # Nothing to optimize
-            
-        # We need to be careful: expr.subs on raw numbers can be tricky
-        # It's better to use something more robust or replace as strings?
-        # No, subs should work if we target the specific atoms.
-        param_expr = expr.subs(substitutions)
         
         # 3. Create lambdified function for SciPy
         # Args order: inputs (v, angle, ...), then parameters (p0, p1, ...)
