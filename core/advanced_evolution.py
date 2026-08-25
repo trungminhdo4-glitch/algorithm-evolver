@@ -182,7 +182,6 @@ class AdvancedEvolutionaryEngine:
             # Selektion
             if self.multi_objective:
                 # Für Multi-Objective: NSGA-II Selektion
-                from deap import tools
                 offspring = tools.selNSGA2(population, len(population))
             else:
                 offspring = self.toolbox.select(population, len(population))
@@ -211,19 +210,19 @@ class AdvancedEvolutionaryEngine:
                         ind[:] = new_ind[:]
                         if hasattr(ind.fitness, 'values'):
                             del ind.fitness.values
-            
+
             # Evaluiere neue Individuen
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
             fitnesses = self.toolbox.map(self.toolbox.evaluate, invalid_ind)
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
-            
+
             # Ersetze Population
             population[:] = offspring
-            
+
             # Hall of Fame aktualisieren
             hall_of_fame.update(population)
-            
+
             # Diversitätserhaltung
             if self.maintain_diversity and gen % 10 == 0:
                 diversity = self._calculate_diversity(population)
@@ -233,10 +232,19 @@ class AdvancedEvolutionaryEngine:
                     for _ in range(n_new):
                         idx = random.randint(0, len(population)-1)
                         population[idx] = self.toolbox.individual()
+
+            # Evaluiere injizierte Individuen
+            injected_ind = [ind for ind in population if not ind.fitness.valid]
+            fitnesses = self.toolbox.map(self.toolbox.evaluate, injected_ind)
+            for ind, fit in zip(injected_ind, fitnesses):
+                ind.fitness.values = fit
+
+            if injected_ind:
+                hall_of_fame.update(population)
             
             # Logging
             record = self.stats.compile(population)
-            logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+            logbook.record(gen=gen, nevals=len(invalid_ind) + len(injected_ind), **record)
             
             if verbose and gen % 10 == 0:
                 print(f"Gen {gen}: Fitness={record['fitness']['min']:.4f}, "

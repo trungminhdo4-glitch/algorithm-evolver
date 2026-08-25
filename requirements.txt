@@ -5,3 +5,4 @@ deap
 sympy
 scikit-learn
 pandas
+tqdm
