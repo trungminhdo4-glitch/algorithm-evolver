@@ -81,6 +81,8 @@ class DimensionalChecker:
                 # For regular terminals, node.name is 'ARG0', 'P', etc.
                 # For ephemerals, node.name is the value string, but the class name is 'rand_L' etc.
                 unit = self.pset_units.get(node.name)
+                if unit is None and isinstance(node.value, str):
+                    unit = self.pset_units.get(node.value)
                 if unit is None:
                     unit = self.pset_units.get(node.__class__.__name__, Dimension(0, 0, 0, 0, 0))
                 stack.append(unit)

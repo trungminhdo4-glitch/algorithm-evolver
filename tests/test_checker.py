@@ -1,8 +1,63 @@
 from deap import gp
 import operator
 import math
+import pytest
 from core.physics import Dimension, DimensionalChecker
 from problems.damped_oscillation import DampedOscillationProblem
+from problems.gravitation import GravitationProblem
+from problems.ideal_gas import IdealGasProblem
+from problems.oscillation import OscillationProblem
+from problems.projectile import ProjectileProblem
+
+
+@pytest.mark.parametrize(
+    ("problem_type", "unit_keys"),
+    [
+        (DampedOscillationProblem, ("t",)),
+        (GravitationProblem, ("m1", "m2", "r")),
+        (ProjectileProblem, ("v", "angle")),
+        (OscillationProblem, ("t",)),
+        (IdealGasProblem, ("ARG0", "ARG1", "ARG2", "ARG3")),
+    ],
+)
+def test_renamed_physical_inputs_resolve_declared_units(problem_type, unit_keys):
+    problem = problem_type()
+    pset = problem.create_primitive_set()
+    checker = DimensionalChecker(problem.pset_units)
+
+    for input_name, unit_key in zip(problem.input_names, unit_keys):
+        individual = gp.PrimitiveTree.from_string(input_name, pset)
+        unit, consistent = checker.check_tree(individual)
+
+        assert consistent
+        assert unit == problem.pset_units[unit_key]
+
+
+def test_renamed_physical_inputs_are_checked_inside_expressions():
+    problem = ProjectileProblem()
+    pset = problem.create_primitive_set()
+    checker = DimensionalChecker(problem.pset_units)
+
+    valid = gp.PrimitiveTree.from_string("mul(v, sin(angle))", pset)
+    unit, consistent = checker.check_tree(valid)
+    assert consistent
+    assert unit == problem.pset_units["v"]
+
+    invalid = gp.PrimitiveTree.from_string("sin(v)", pset)
+    unit, consistent = checker.check_tree(invalid)
+    assert not consistent
+    assert unit is None
+
+
+def test_numeric_terminal_remains_dimensionless():
+    problem = ProjectileProblem()
+    pset = problem.create_primitive_set()
+    individual = gp.PrimitiveTree.from_string("1.0", pset)
+
+    unit, consistent = DimensionalChecker(problem.pset_units).check_tree(individual)
+
+    assert consistent
+    assert unit.is_dimensionless()
 
 def test_checker():
     prob = DampedOscillationProblem()
