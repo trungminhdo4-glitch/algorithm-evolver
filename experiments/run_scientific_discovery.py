@@ -50,6 +50,7 @@ def run_scientific_gas_discovery():
     population = engine.toolbox.population(n=engine.population_size)
     for gen in range(0, 520, 40):
         wrapped_eval.gen = gen
+        problem.invalidate_stale_fitness(population, gen)
         population, log = engine.run_nsga2(generations=40, seed=42, population=population)
         best_acc = tools.selBest(population, 1)[0].fitness.values[0]
         print(f"Gen {gen:3d} | Best Acc: {best_acc:.4e} | Pop Size: {len(population)}")
