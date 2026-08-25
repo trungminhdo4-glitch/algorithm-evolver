@@ -1,19 +1,17 @@
-from problems.ideal_gas import IdealGasProblem
-import numpy as np
+from deap import gp
 
-print("Testing IdealGasProblem instantiation...")
-try:
+from core.physics import DimensionalChecker
+from problems.ideal_gas import IdealGasProblem
+
+
+def test_documented_gas_law_has_temperature_dimension():
     problem = IdealGasProblem()
     pset = problem.create_primitive_set()
-    print("Problem and PSet created successfully.")
-    
-    print("Terminal names in pset:")
-    for t in pset.terminals[float]:
-        print(f" - {t.name}")
-        
-    print("Inputs max:", problem.inputs_max)
-    print("Train data sample:", problem.train_data[0])
-except Exception as e:
-    print(f"Error: {e}")
-    import traceback
-    traceback.print_exc()
+    individual = gp.PrimitiveTree.from_string(
+        "protected_div(mul(P, V), mul(n, R))", pset
+    )
+
+    unit, consistent = DimensionalChecker(problem.pset_units).check_tree(individual)
+
+    assert consistent
+    assert unit == problem.target_unit
