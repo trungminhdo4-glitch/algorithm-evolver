@@ -56,6 +56,19 @@ class IdealGasProblem:
             'one': Dimension(0, 0, 0, 0, 0)
         }
         self.target_unit = Dimension(0, 0, 0, 0, 1) # Target Temperature [Theta]
+
+    def penalty_factor(self, generation):
+        """Return the dimensional-penalty warmup for a generation."""
+        return min(1.0, generation / 100.0)
+
+    def invalidate_stale_fitness(self, population, generation):
+        """Drop cached fitness when the dimensional-penalty objective changes."""
+        factor = self.penalty_factor(generation)
+        previous = getattr(self, "_synced_penalty_factor", None)
+        if previous is not None and factor != previous:
+            for individual in population:
+                del individual.fitness.values
+        self._synced_penalty_factor = factor
         
     def create_primitive_set(self):
         from core.primitives import create_power_law_primitive_set
@@ -74,7 +87,7 @@ class IdealGasProblem:
         checker = DimensionalChecker(self.pset_units)
         final_unit, consistent = checker.check_tree(individual)
         
-        warmup_factor = min(1.0, generation / 100.0)
+        warmup_factor = self.penalty_factor(generation)
         
         # Euclidean Dimensional Penalty
         dim_penalty = 1.0
