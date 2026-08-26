@@ -2,6 +2,7 @@ numpy
 scipy
 matplotlib
 deap
+cloudpickle
 sympy
 scikit-learn
 pandas
